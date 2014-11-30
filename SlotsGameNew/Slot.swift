@@ -12,6 +12,7 @@ import UIKit
 struct Slot {
     
     var value = 0
+    var cardRank = 0
     var image = UIImage(named: "cardBack")
     var isHeart = false
     var isDiamond = false

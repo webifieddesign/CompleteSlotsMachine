@@ -37,25 +37,45 @@ class SlotLogic {
         var fourOfAKindWinCount = 0
         var threeOfAKindWinCount = 0
         var twoPairWinCount = 0
-        var straitWinCount = 0
+        var straightWinCount = 0
+        var straightFlushWinCount = 0
         
         for slotRow in slotsInRows {
             
             if checkFlush(slotRow) == true {
-                print("flush")
-                winnings += 1
+                println("flush")
+                winnings += 50
                 flushWinCount += 1
             }
-            else if checkFlush(slotRow) == true {
-                print("straight")
+            else if checkStraight(slotRow) == true {
+                println("straight")
+                winnings += 1000
+                straightWinCount += 1
+            }
+            else if checkFourOfAKind(slotRow) == true {
+                println("four of a kind")
+                winnings += 5
+                fourOfAKindWinCount += 1
+            }
+            else if checkThreeOfAKind(slotRow) == true {
+                println("three of a kind")
+                winnings += 3
+                threeOfAKindWinCount += 1
+            }
+            else if checkTwoPair(slotRow) == true {
+                println("two pair")
                 winnings += 1
-                straitWinCount += 1
+                twoPairWinCount += 1
+            }
+            else if checkFlush(slotRow) == true && checkStraight(slotRow) == true {
+                print("Straing flush")
+                winnings += 10000
+                straightFlushWinCount += 1
             }
             
         }
         
         return winnings
-        }
     }
     
     class func checkFlush (slotRow: [Slot]) -> Bool {
@@ -90,21 +110,100 @@ class SlotLogic {
         let slot4 = slotsRow[3]
         let slot5 = slotsRow[4]
         
-            // Needs check to prevent straight from cycling back to ace
-            if slot1.value == slot2.value - 1 && slot1.value == slot3.value - 2 && slot1.value == slot4.value - 3 && slot1.value == slot4.value - 4 {
-                return true
-            }
-            else if slot1.value == slot2.value + 1 && slot1.value == slot3.value + 2 && slot1.value == slot4.value + 3 && slot1.value == slot4.value + 4 {
-                return true
-            }
-            else {
-                return false
-            }
-        
+        // Needs check to prevent straight from cycling back to ace
+        if slot1.cardRank == slot2.cardRank - 1 && slot1.cardRank == slot3.cardRank - 2 && slot1.cardRank == slot4.cardRank - 3 && slot1.cardRank == slot4.cardRank - 4 {
+            return true
         }
+        else if slot1.cardRank == slot2.cardRank + 1 && slot1.cardRank == slot3.cardRank + 2 && slot1.cardRank == slot4.cardRank + 3 && slot1.cardRank == slot4.cardRank + 4 {
+            return true
+        }
+        else {
+            return false
+        }
+    }
     
-//    class func checkFourOfAKind (slotsRow: [Slot]) -> Bool {
-//        
-//        
-//    }
+    class func checkFourOfAKind (slotsRow: [Slot]) -> Bool {
+        let slot1 = slotsRow[0]
+        let slot2 = slotsRow[1]
+        let slot3 = slotsRow[2]
+        let slot4 = slotsRow[3]
+        let slot5 = slotsRow[4]
+        
+        if slot1.cardRank == slot2.cardRank && slot1.cardRank == slot3.cardRank && slot1.cardRank == slot4.cardRank {
+            return true
+        }
+        else if slot1.cardRank == slot2.cardRank && slot1.cardRank == slot3.cardRank && slot1.cardRank == slot5.cardRank {
+            return true
+        }
+        else if slot1.cardRank == slot2.cardRank && slot1.cardRank == slot4.cardRank && slot1.cardRank == slot5.cardRank {
+            return true
+        }
+        else if slot1.cardRank == slot3.cardRank && slot1.cardRank == slot4.cardRank && slot1.cardRank == slot5.cardRank {
+            return true
+        }
+        else if slot2.cardRank == slot3.cardRank && slot2.cardRank == slot4.cardRank && slot2.cardRank == slot5.cardRank {
+            return true
+        }
+        else {
+            return false
+        }
+    }
+    
+    class func checkThreeOfAKind (slotsRow: [Slot]) -> Bool {
+        let slot1 = slotsRow[0]
+        let slot2 = slotsRow[1]
+        let slot3 = slotsRow[2]
+        let slot4 = slotsRow[3]
+        let slot5 = slotsRow[4]
+        
+        if slot1.cardRank == slot2.cardRank && slot1.cardRank == slot3.cardRank {
+            return true
+        }
+        else if slot1.cardRank == slot2.cardRank && slot1.cardRank == slot4.cardRank {
+            return true
+        }
+        else if slot1.cardRank == slot2.cardRank && slot1.cardRank == slot5.cardRank {
+            return true
+        }
+        else if slot1.cardRank == slot3.cardRank && slot1.cardRank == slot4.cardRank {
+            return true
+        }
+        else if slot2.cardRank == slot3.cardRank && slot2.cardRank == slot4.cardRank {
+            return true
+        }
+        else if slot2.cardRank == slot3.cardRank && slot2.cardRank == slot5.cardRank {
+            return true
+        }
+        else if slot3.cardRank == slot4.cardRank && slot3.cardRank == slot5.cardRank {
+            return true
+        }
+        else {
+            return false
+        }
+    }
+    
+    class func checkTwoPair (slotsRow: [Slot]) -> Bool {
+        var cardsArray: [Int] = []
+        var pairCount = 0
+        
+        for slot in slotsRow {
+            cardsArray.append(slot.cardRank)
+        }
+        
+        cardsArray.sort( {$0 < $1} )
+        
+        for var i = 0; i < 4; ++i {
+            if cardsArray[i] == cardsArray[i+1] {
+                pairCount++
+            }
+        }
+        
+        if pairCount == 2 {
+            return true
+        }
+        else {
+            return false
+        }
+    }
+    
 }
