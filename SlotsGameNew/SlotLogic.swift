@@ -29,7 +29,7 @@ class SlotLogic {
         return slotsInRows
     }
     
-    class func computeWinnings (slotsArray: [[Slot]]) -> Int {
+    class func computeWinnings (slotsArray: [[Slot]]) -> (winnings: Int, winLabelArray: [String]) {
         var slotsInRows = invertSlotColumnsAndRows(slotsArray)
         var winnings = 0
         
@@ -40,42 +40,53 @@ class SlotLogic {
         var straightWinCount = 0
         var straightFlushWinCount = 0
         
+        var winLabelsArray:[String] = []
+        
         for slotRow in slotsInRows {
             
             if checkFlush(slotRow) == true {
-                println("flush")
-                winnings += 50
+                println("flush" )
+                winnings += 25
                 flushWinCount += 1
+                winLabelsArray.append("Flush!")
             }
             else if checkStraight(slotRow) == true {
                 println("straight")
                 winnings += 1000
                 straightWinCount += 1
+                winLabelsArray.append("Straight!")
             }
             else if checkFourOfAKind(slotRow) == true {
                 println("four of a kind")
                 winnings += 5
                 fourOfAKindWinCount += 1
+                winLabelsArray.append("Four of a Kind!")
             }
             else if checkThreeOfAKind(slotRow) == true {
                 println("three of a kind")
                 winnings += 3
                 threeOfAKindWinCount += 1
+                winLabelsArray.append("Three of a Kind!")
             }
             else if checkTwoPair(slotRow) == true {
                 println("two pair")
                 winnings += 1
                 twoPairWinCount += 1
+                winLabelsArray.append("Two Pair!")
             }
             else if checkFlush(slotRow) == true && checkStraight(slotRow) == true {
                 print("Straing flush")
                 winnings += 10000
                 straightFlushWinCount += 1
+                winLabelsArray.append("Royal Flush!")
             }
-            
+            else {
+                winLabelsArray.append("")
+            }
         }
-        
-        return winnings
+        println("end of turn")
+        println("\(winLabelsArray)")
+        return (winnings, winLabelsArray)
     }
     
     class func checkFlush (slotRow: [Slot]) -> Bool {
@@ -110,7 +121,6 @@ class SlotLogic {
         let slot4 = slotsRow[3]
         let slot5 = slotsRow[4]
         
-        // Needs check to prevent straight from cycling back to ace
         if slot1.cardRank == slot2.cardRank - 1 && slot1.cardRank == slot3.cardRank - 2 && slot1.cardRank == slot4.cardRank - 3 && slot1.cardRank == slot4.cardRank - 4 {
             return true
         }

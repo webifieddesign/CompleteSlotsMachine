@@ -41,6 +41,13 @@ class ViewController: UIViewController {
     var winningsCountLabel: UILabel!
     var winningsLabel: UILabel!
     
+    // Slot labels
+    var rowOneLabel = UILabel()
+    var rowTwoLabel = UILabel()
+    var rowThreeLabel = UILabel()
+    var rowFourLabel = UILabel()
+    var rowFiveLabel = UILabel()
+    
     // Bet Buttons, reset
     let buttonDiameter = 75
     var resetButton: UIButton!
@@ -115,26 +122,52 @@ class ViewController: UIViewController {
         slotsArray = Factory.createSlots()
         setupSlotsContainer(self.slotsContainer)
         
-        var winningsMultiplier = SlotLogic.computeWinnings(slotsArray)
-        winningsCount = winningsMultiplier * betCount
+        var winningsMultiplierAndLabel = SlotLogic.computeWinnings(slotsArray)
+        winningsCount = winningsMultiplierAndLabel.winnings * betCount
         creditsCount += winningsCount
         betCount = 0
         
         updateLabelsText()
         
+        for var i = 0; i < winningsMultiplierAndLabel.winLabelArray.count; ++i {
+            
+            if winningsMultiplierAndLabel.winLabelArray[i] != "" {
+                if i == 0 {
+                    rowOneLabel.hidden = false
+                    rowOneLabel.text = winningsMultiplierAndLabel.winLabelArray[0]
+                }
+                else if i == 1 {
+                    rowTwoLabel.hidden = false
+                    rowTwoLabel.text = winningsMultiplierAndLabel.winLabelArray[1]
+                }
+                else if i == 2 {
+                    rowThreeLabel.hidden = false
+                    rowThreeLabel.text = winningsMultiplierAndLabel.winLabelArray[2]
+                }
+                else if i == 3 {
+                    rowFourLabel.hidden = false
+                    rowFourLabel.text = winningsMultiplierAndLabel.winLabelArray[3]
+                }
+                else if i == 4 {
+                    rowFiveLabel.hidden = false
+                    rowFiveLabel.text = winningsMultiplierAndLabel.winLabelArray[4]
+                }
+            }
+        }
+        
     }
     
     func setupContainerViews() {
-        self.titleContainer = UIView(frame: CGRect(x: view.bounds.origin.x + kMargin, y: view.bounds.origin.y, width: self.view.bounds.width - kMargin * 2, height: 80.0))
+        self.titleContainer = UIView(frame: CGRect(x: view.bounds.origin.x + kMargin, y: view.bounds.origin.y, width: self.view.bounds.width - kMargin * 2, height: 70.0))
         self.view.addSubview(titleContainer)
         
         self.slotsContainer = UIView(frame: CGRect(x: view.bounds.origin.x + kMargin, y: view.bounds.origin.y + titleContainer.bounds.height, width: self.view.bounds.width - kMargin * 2, height: view.bounds.height * kHalf))
         self.view.addSubview(slotsContainer)
         
-        self.creditsContainer = UIView(frame: CGRect(x: view.bounds.origin.x + kMargin, y: view.bounds.origin.y + slotsContainer.bounds.height + kMargin + titleContainer.bounds.height, width: self.view.bounds.width - kMargin * 2, height: view.bounds.height * kSixth - 30.0))
+        self.creditsContainer = UIView(frame: CGRect(x: view.bounds.origin.x + kMargin, y: view.bounds.origin.y + slotsContainer.bounds.height + kMargin + titleContainer.bounds.height, width: self.view.bounds.width - kMargin * 2, height: view.bounds.height * kSixth - 10.0))
         self.view.addSubview(creditsContainer)
         
-        self.betContainer = UIView(frame: CGRect(x: view.bounds.origin.x + kMargin, y: view.bounds.origin.y + slotsContainer.bounds.height + creditsContainer.bounds.height + (2 * kMargin) + titleContainer.bounds.height, width: self.view.bounds.width - kMargin * 2, height: view.bounds.height * kSixth - 30))
+        self.betContainer = UIView(frame: CGRect(x: view.bounds.origin.x + kMargin, y: view.bounds.origin.y + slotsContainer.bounds.height + creditsContainer.bounds.height + (2 * kMargin) + titleContainer.bounds.height, width: self.view.bounds.width - kMargin * 2, height: view.bounds.height * kSixth - 30.0))
         self.view.addSubview(betContainer)
         
         self.spinContainer = UIView(frame: CGRect(x: view.bounds.origin.x + kMargin, y: view.bounds.origin.y + slotsContainer.bounds.height + creditsContainer.bounds.height + betContainer.bounds.height + (3 * kMargin) + titleContainer.bounds.height, width: self.view.bounds.width - kMargin * 2, height: view.bounds.height * kSixth - (20.0 + kMargin * 4)))
@@ -171,12 +204,34 @@ class ViewController: UIViewController {
             }
         }
         
+        func createWinLabel (label: UILabel, labelHeight: CGFloat) {
+            
+            label.frame = CGRect(x: 0, y: 0, width: containerView.bounds.width - (kMargin*2), height: containerView.bounds.height * kFifth)
+            label.center = CGPoint(x: containerView.bounds.width * kHalf, y: ((containerView.bounds.height * kFifth) * labelHeight) - ((containerView.bounds.height * kFifth) * kHalf))
+            label.textColor = UIColor(red:0.12, green:0.63, blue:0.52, alpha:1)
+            label.font = UIFont(name: "HelveticaNeue-Bold", size: 20)
+            label.textAlignment = NSTextAlignment.Center
+            label.backgroundColor = UIColor(red:1, green:1, blue:1, alpha:0.8)
+            label.layer.borderColor = UIColor(red:0.12, green:0.63, blue:0.52, alpha:1).CGColor
+            label.layer.borderWidth = 2
+            label.layer.masksToBounds = true
+            label.layer.cornerRadius = 5
+            label.text = "Hi"
+            label.hidden = true
+            containerView.addSubview(label)
+        }
+    
+        createWinLabel(rowOneLabel, 1.0)
+        createWinLabel(rowTwoLabel, 2.0)
+        createWinLabel(rowThreeLabel, 3.0)
+        createWinLabel(rowFourLabel, 4.0)
+        createWinLabel(rowFiveLabel, 5.0)
     }
     
     func setupCreditsContainer () {
 //        func createLabel (labelProperty: UILabel, centerWidth: CGFloat, centerHeight: CGFloat, labelText: String) {
 //            labelProperty = UILabel(frame: CGRectMake(creditsContainer.bounds.origin.x, creditsContainer.bounds.origin.y, creditsContainer.bounds.width * kFifth, creditsContainer.bounds.height * kFifth))
-//            labelProperty.center = CGPoint(x: creditsContainer.bounds.width * (kFifth * centerHeight), y: creditsContainer.bounds.height * (kThird * centerHeight))
+//            labelProperty.center = CGPoint(x: creditsContainer.bounds.width * (kFifth * centerWidth), y: creditsContainer.bounds.height * (kThird * centerHeight))
 //            labelProperty.text = labelText
 //            labelProperty.textColor = UIColor.whiteColor()
 //            labelProperty.textAlignment = NSTextAlignment.Center
@@ -185,12 +240,14 @@ class ViewController: UIViewController {
 //        }
         
         
-        self.creditsCountLabel = UILabel(frame: CGRectMake(0, 0, creditsContainer.bounds.width * kFifth, creditsContainer.bounds.height * kFifth))
+        self.creditsCountLabel = UILabel(frame: CGRectMake(0, 0, creditsContainer.bounds.width * kFifth, creditsContainer.bounds.height * kFifth + 5.0))
         self.creditsCountLabel.center = CGPoint(x: creditsContainer.bounds.width * kFifth, y: creditsContainer.bounds.height * kThird)
         self.creditsCountLabel.text = "000000"
         self.creditsCountLabel.textColor = UIColor.whiteColor()
         self.creditsCountLabel.textAlignment = NSTextAlignment.Center
         self.creditsCountLabel.backgroundColor = UIColor.darkGrayColor()
+        self.creditsCountLabel.layer.masksToBounds = true
+        self.creditsCountLabel.layer.cornerRadius = 5
         creditsContainer.addSubview(creditsCountLabel)
         
         self.creditsLabel = UILabel(frame: CGRectMake(0, 0, creditsContainer.bounds.width * kFifth, creditsContainer.bounds.height * kFifth))
@@ -200,12 +257,14 @@ class ViewController: UIViewController {
         self.creditsLabel.textAlignment = NSTextAlignment.Center
         creditsContainer.addSubview(creditsLabel)
         
-        self.betCountLabel = UILabel(frame: CGRectMake(0, 0, creditsContainer.bounds.width * kFifth, creditsContainer.bounds.height * kFifth))
+        self.betCountLabel = UILabel(frame: CGRectMake(0, 0, creditsContainer.bounds.width * kFifth, creditsContainer.bounds.height * kFifth + 5.0))
         self.betCountLabel.center = CGPoint(x: creditsContainer.bounds.width * (kHalf), y: creditsContainer.bounds.height * kThird)
         self.betCountLabel.text = "000000"
         self.betCountLabel.textColor = UIColor.whiteColor()
         self.betCountLabel.textAlignment = NSTextAlignment.Center
         self.betCountLabel.backgroundColor = UIColor.darkGrayColor()
+        self.betCountLabel.layer.masksToBounds = true
+        self.betCountLabel.layer.cornerRadius = 5
         creditsContainer.addSubview(betCountLabel)
 
         self.betLabel = UILabel(frame: CGRectMake(0, 0, creditsContainer.bounds.width * kFifth, creditsContainer.bounds.height * kFifth))
@@ -215,11 +274,13 @@ class ViewController: UIViewController {
         self.betLabel.textAlignment = NSTextAlignment.Center
         creditsContainer.addSubview(betLabel)
         
-        self.winningsCountLabel = UILabel(frame: CGRectMake(0, 0, creditsContainer.bounds.width * kFifth, creditsContainer.bounds.height * kFifth))
+        self.winningsCountLabel = UILabel(frame: CGRectMake(0, 0, creditsContainer.bounds.width * kFifth, creditsContainer.bounds.height * kFifth + 5.0))
         self.winningsCountLabel.center = CGPoint(x: creditsContainer.bounds.width * (kFifth * 4), y: creditsContainer.bounds.height * kThird)
         self.winningsCountLabel.text = "000000"
         self.winningsCountLabel.textColor = UIColor.whiteColor()
         self.winningsCountLabel.backgroundColor = UIColor.darkGrayColor()
+        self.winningsCountLabel.layer.masksToBounds = true
+        self.winningsCountLabel.layer.cornerRadius = 5
         self.winningsCountLabel.textAlignment = NSTextAlignment.Center
         creditsContainer.addSubview(winningsCountLabel)
         
